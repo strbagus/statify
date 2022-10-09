@@ -2,11 +2,13 @@
   import { RouterLink } from 'vue-router';
   export default {
     mounted() {
-      if(localStorage.getItem('authCode')){
+      if(localStorage.getItem('authcode')){
+        this.logout()
+      }else{
         this.localToData()
+        this.spotUser()
+        this.toogle = true
       }
-      // if(this.authCode.accessToken===null){this.$router.replace('/login')}
-      this.spotUser()
     },
     component: {
       RouterLink,
@@ -19,11 +21,7 @@
           expiredIn: null,
           state: null,
         },
-        // user: {
-        //   test: null,
-        //   display_name: 'bagusw',
-        //   images_url: 'https://i.scdn.co/image/ab6775700000ee85f481b036d08c4dde97633fd1',
-        // },
+        toogle: false,
         user: [],
       }
     },
@@ -37,31 +35,36 @@
       },
       spotUser: function(){
         fetch('https://api.spotify.com/v1/me', {
-          method: 'GET',
-          mode: 'cors',
+          method: 'get',
           headers: {
             'Content-Type': 'application/json',
-            'Authentication': 'Bearer '+this.authCode.accessToken,
+            'Authorization': 'Bearer '+this.authCode.accessToken,
           },
         })
           .then((response) => response.json())
           .then((data) => {
             this.user = data
+            console.log(data)
           })
       },
-    }
+      logout: function(){
+        localStorage.removeItem('authCode')
+        this.$router.replace('/login')
+      }
+    },
   }
 </script>
 
 <template>
   <main>
-    <h1 class="text-green-500 text-3xl italic text-center py-2">Statify</h1>
-    <div class="content-box container mx-auto bg-yellow-500 absolute p-2">
-      <div class="flex bg-red-500 p-2 items-center">
-        <img :src="user.images.url" alt="test" class="h-12 w-12 rounded-xl">
-        <span class="text-xl px-3">{{ user.display_name }}</span>
+    <h1 class="text-green-500 text-3xl italic text-center py-2 font-bold">Statify</h1>
+    <div v-if="toogle===true" class="content-box container mx-auto absolute p-2">
+      <div class="flex bg-white rounded-xl p-2 items-center">
+        <img :src="user.images[0].url" alt="test" class="h-10 w-10 rounded-xl">
+        <span class="text-xl px-3 text-gray-600 font-semibold italic">{{ user.display_name }}</span>
       </div>
     </div>
+    <button class="bg-red-500 px-5 py-1 rounded font-semibold" @click="logout">Logout</button>
   </main>
 </template>
 
