@@ -23,7 +23,6 @@
             getTokenURL: function(){
                 const fullUrl = window.location.href
                 const queryString = fullUrl.replace(import.meta.env.VITE_REDIRECT_URI+'#', '?')
-                console.log(queryString)
                 const urlParams = new URLSearchParams(queryString)
                 this.authorize.accessToken = urlParams.get('access_token')
                 this.authorize.tokenType = urlParams.get('token_type')
