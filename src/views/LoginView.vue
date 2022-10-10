@@ -11,11 +11,11 @@
     },
     mounted (){
       const clientId = import.meta.env.VITE_CLIENT_ID;
-      const redirect_uri = import.meta.env.VITE_REDIRECT_URI;
+      const redirect_uri = encodeURI(import.meta.env.VITE_REDIRECT_URI);
       const state = this.generateString(16);
-      const scope = 'user-read-private user-read-email';
+      const scope = 'user-read-email+user-read-private+user-top-read';
 
-      let authUrl = 'https://accounts.spotify.com/authorize?response_type=token&client_id='+clientId+'&scope'+encodeURI(scope)+'&redirect_uri='+redirect_uri+'&state='+state
+      let authUrl = 'https://accounts.spotify.com/authorize?response_type=token&redirect_uri='+redirect_uri+'&client_id='+clientId+'&scope='+scope+'&state='+state
       this.authUrl = authUrl.replace(' ', '')
     },
     methods: {
