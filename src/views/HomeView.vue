@@ -3,13 +3,13 @@
   import Icon from '@/components/Icon.vue'
   export default {
     mounted() {
-      if(!localStorage.getItem('authCode')||localStorage.getItem('authCode').accessToken===null){
-        this.logout()
-      }else{
+      // if(!localStorage.getItem('authCode')||localStorage.getItem('authCode').accessToken===null){
+      //   this.logout()
+      // }else{
         this.localToData()
         this.spotCallAPI()
         this.toogle = true
-      }
+      // }
     },
     components: {
       RouterLink,

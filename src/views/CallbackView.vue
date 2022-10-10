@@ -4,8 +4,7 @@
         mounted() {
             this.getTokenURL()
             this.setTokenLocal()
-            // this.$router.replace('/')
-            console.log('ss')
+            this.$router.replace('/')
         },
         component: {
             RouterLink,
