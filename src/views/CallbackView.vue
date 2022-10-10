@@ -4,7 +4,8 @@
         mounted() {
             this.getTokenURL()
             this.setTokenLocal()
-            this.$router.replace('/')
+            // this.$router.replace('/')
+            console.log('ss')
         },
         component: {
             RouterLink,
@@ -38,5 +39,7 @@
 </script>
 <template>
     <div class="bg-red-500">Callback test</div>
-    <router-link to="/">Home</router-link>
+    <router-link to="/">
+        <button class="bg-blue-500 px-3 py-1 hover:bg-blue-600 rounded">Home</button>
+    </router-link>
 </template>
