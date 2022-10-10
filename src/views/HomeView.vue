@@ -35,18 +35,23 @@
         this.authCode.state = authCode.state
       },
       spotCallAPI: function(){
-        fetch('https://api.spotify.com/v1/me', {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+this.authCode.accessToken,
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            this.user = data
-            console.log(data)
+        function handleErrors(response) {
+          if (!response.ok) throw new Error(response.status);
+          return response;
+        }
+          fetch('https://api.spotify.com/v1/me', {
+            method: 'get',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer '+this.authCode.accessToken,
+            },
           })
+            .then(handleErrors)
+            .then((response) => response.json())
+            .then((data) => {
+              this.user = data
+            })
+            .catch(error => this.logout())
 
         fetch('https://api.spotify.com/v1/me/playlists?limit=4', {
           method: 'get',
@@ -58,7 +63,6 @@
           .then((response) => response.json())
           .then((data) => {
             this.playlists = data
-            console.log(data)
           })
       },
       logout: function(){
