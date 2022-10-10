@@ -62,7 +62,7 @@
             .then((response) => response.json())
             .then((data) => {
               this.user.name = data.display_name
-              this.user.url = data.images[0].url
+              this.user.url = data.images.length>0 ? data.images[0].url : null
             })
             .catch(error => this.errors=error)
 
@@ -75,7 +75,11 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            this.playlists = data.items
+            if(data){
+              if(data.items.length>0){
+                this.playlists = data.items
+              }
+            }
           })
 
         fetch('https://api.spotify.com/v1/me/top/artists?limit=15', {
@@ -87,8 +91,9 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            this.artists = data.items
-            console.log(data.items)
+            if(data.items.length>0){
+              this.artists = data.items
+            }
           })
       },
       logout: function(){
@@ -108,7 +113,7 @@
       <div>
         <h2 class="text-xl text-white">Favourite Artist</h2>
       </div>
-      <div class="flex flex-col py-3 px-1 my-3">
+      <div v-if="artists.length>0" class="flex flex-col py-3 px-1 my-3">
         <div class="flex w-full justify-evenly">
           <div class="flex items-end w-24 justify-center"><img :src="artists[1].images[2].url" alt="" class="h-20 w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200 rounded-full"></div>
           <div class=" w-24 justify-center"><img :src="artists[0].images[2].url" alt="" class="h-24 w-24 rounded-full border border-2 shadow-lg shadow-yellow-400 border-yellow-500"></div>
@@ -128,10 +133,11 @@
         </template>
         </div>
       </div>
+      <div v-else class="text-xs italic text-gray-300">Artist not Found</div>
       <div class="flex flex-col py-3 px-1 w-full">
         <h2 class="text-xl text-white">Favourite Playlist</h2>
       </div>
-      <div class="flex px-1 justify-evenly">
+      <div v-if="playlists.length>0" class="flex px-1 justify-evenly">
         <div v-for="playlist in playlists" class="flex flex-wrap">
           <div class="w-20">
             <img :src="playlist.images[1].url" alt="" class="h-20 w-20">
@@ -142,9 +148,10 @@
           </div>
         </div>
       </div>
+      <div v-else class="text-xs italic text-gray-300">Playlist not Found</div>
       <div class="flex justify-center pt-5">
         <div class="flex items-center bg-white rounded-xl p-1">
-          <img :src="user.url" alt="test" class="h-6 w-6 rounded-xl">
+          <img v-if="user.url!==null" :src="user.url" alt="profile" class="h-6 w-6 rounded-xl">
           <span class="text-md px-3 text-gray-600 font-semibold italic">{{ user.name }}</span>
           <button>
             <icon name="icon_logout" class="h-4 w-4 fill-red-500 hover:fill-red-600 focus:fill-red-100" @click="logout" />
