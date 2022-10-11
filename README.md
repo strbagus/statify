@@ -8,7 +8,7 @@ Demo [here](https://statify.strbagus.com)
 ---
 
 ## Preview
-![[statify-screenshot.png]]
+![Image](statify-screenshot.png)
 
 ## Setup Your Own
 #### Setup Spotify for Developer
