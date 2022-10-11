@@ -1,46 +1,31 @@
-# spotify
+# Statify
+Display user top artist and playlist with data from Spotify API.
 
-This template should help get you started developing with Vue 3 in Vite.
+Demo [here](https://statify.strbagus.com)
 
-## Recommended IDE Setup
+*note: this website in development mode from spotify, which mean need invitation via email to login and work properly*
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+---
 
-## Type Support for `.vue` Imports in TS
+## Preview
+![[statify-screenshot.png]]
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+## Setup Your Own
+#### Setup Spotify for Developer
+- Login into [Spotify for Developer](https://developer.spotify.com/dashboard)
+- Create an App
+- In App click Edit Settings
+- In Redirect URI add `your.url/callback`, example: `http://127.0.0.1:8000/callback`
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+#### Setup Website
+- Git clone this repo
+- run `npm install`
+- copy `.env.example` to  `.env`
+- In `.env` set  `VITE_CLIENT_ID`, `VITE_REDIRECT_URI` & `VITE_CLIENT_SECRET` with client_id, client_secret & redirect URI from [Spotify for Developer](https://developer.spotify.com/dashboard)
+- run `npm run dev` or `npm run build`
+- that's it
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## Tech
+- Frontend: [Vue3](https://vuejs.org/)
+- CSS Styling: [Tailwindcss](https://tailwindcss.com/)
