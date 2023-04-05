@@ -1,10 +1,6 @@
 # Statify
 Display user top artist and playlist with data from Spotify API.
 
-Demo [here](https://statify.strbagus.com)
-
-*note: this website in development mode from spotify, which mean need invitation via email to login and work properly*
-
 ---
 
 ## Preview
