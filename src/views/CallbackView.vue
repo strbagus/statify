@@ -3,8 +3,6 @@
     export default {
         mounted() {
             this.getTokenURL()
-            this.setTokenLocal()
-            this.$router.replace('/')
         },
         component: {
             RouterLink,
@@ -28,17 +26,18 @@
                 this.authorize.tokenType = urlParams.get('token_type')
                 this.authorize.expiredIn = urlParams.get('expires_in')
                 this.authorize.state = urlParams.get('state')
-
+                if(urlParams.get('access_token')!=null){
+                  this.setTokenLocal()
+                } else {
+                  this.$router.replace('/login')
+                }
             },
             setTokenLocal: function(){
                 localStorage.setItem("authCode", JSON.stringify(this.authorize))
+                this.$router.replace('/')
             }
         }
     }
 </script>
 <template>
-    <div class="bg-red-500">Callback test</div>
-    <router-link to="/">
-        <button class="bg-blue-500 px-3 py-1 hover:bg-blue-600 rounded">Home</button>
-    </router-link>
 </template>
