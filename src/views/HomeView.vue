@@ -117,7 +117,7 @@
         <svg v-else xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M9.4 18L8 16.6l4.6-4.6L8 7.4L9.4 6l6 6l-6 6Z"/></svg>
       </label>
     </div>
-    <div v-if="displays.nav" class="bg-gradient-to-t from-zinc-800 to-neutral-800 h-screen w-[300px] py-12 px-10 fixed top-0 right-0 z-40 flex flex-col justify-between">
+    <div v-if="displays.nav" class="bg-gradient-to-t from-zinc-800 to-neutral-800 h-screen w-[300px] pt-12 px-10 fixed top-0 right-0 z-40 flex flex-col justify-between">
       <div>
         <div class="flex">
           <img v-if="user.url!==null" :src="user.url" alt="profile" class="h-6 w-6 rounded-xl">
@@ -133,10 +133,15 @@
           </ul>
         </div>
       </div>
-      <div class="flex justify-center">
-        <div class="flex items-center bg-zinc-700 rounded-xl py-1 px-3 cursor-pointer hover:border-zinc-300 border border-transparent duration-100" @click="logout">
-          <div class="text-white mr-3">Logout</div>
-            <icon name="icon_logout" class="h-4 w-4 fill-red-500" />
+      <div>
+        <div class="flex justify-center">
+          <div class="flex items-center bg-zinc-700 rounded-xl py-1 px-3 cursor-pointer hover:border-zinc-300 border border-transparent duration-100" @click="logout">
+            <div class="text-white mr-3">Logout</div>
+              <icon name="icon_logout" class="h-4 w-4 fill-red-500" />
+          </div>
+        </div>
+        <div class="mt-10 mb-2 flex justify-center text-zinc-700 text-sm italic">  
+          Author:<a href="https://strbagus.com" class="text-zinc-400 font-semibold" target="blank">&nbsp;strbagus</a>
         </div>
       </div>
     </div>
