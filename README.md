@@ -1,10 +1,10 @@
-# Statify
-Display user top artist and playlist with data from Spotify API.
+# Statify - Look Your Spotify Top Item
+Display user top artist, playlist, tracks and shows with data from Spotify API.
 
 ---
 
 ## Preview
-![Image](statify-screenshot.png)
+![Statify Screenshot Picture](https://drive.google.com/uc?id=1d4Mqy4qAj5Lk3vm68hGnOdXn_w3nYW_q)
 
 ## Setup Your Own
 #### Setup Spotify for Developer
