@@ -27,7 +27,7 @@
         const clientID = import.meta.env.VITE_CLIENT_ID
         const redirect_uri = encodeURI(import.meta.env.VITE_REDIRECT_URI)
         const state = this.generateString(16)
-        const scope = 'user-read-email+user-read-private+user-top-read';
+        const scope = 'user-read-email+user-read-private+user-top-read+user-library-read';
         this.authUrl = 'https://accounts.spotify.com/authorize?response_type=token&redirect_uri='+redirect_uri+'&client_id='+clientID+'&scope='+scope+'&state='+state
       },
       authButton: function() {
