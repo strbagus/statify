@@ -10,8 +10,8 @@
         this.spotCallAPI()
         this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
         this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-        this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
-        this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
+        this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7&time_range=short_term', 'artist')
+        this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4&time_range=short_term', 'song')
       }
     },
     components: {
@@ -67,7 +67,6 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log(data.items)
               if(name=='artist'){
                 this.artists = data.items
               }else if(name=='playlist'){
