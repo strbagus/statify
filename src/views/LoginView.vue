@@ -42,8 +42,12 @@
       <div class="w-full md:w-1/2 md:h-screen md:flex md:justify-end md:items-center">
         <div class="w-full md:max-w-[450px] h-screen md:max-h-[600px] fixed md:relative">
           <img src="../assets/images/eunji.jpg" class="absolute top-0 left-0 object-cover h-full w-full">
+          <div class="relative top-1/2 ml-5 block md:hidden">
+            <h1 class="text-white text-4xl font-semibold italic">Statify</h1>
+            <span class="text-neutral-100">See your Spotify top items.</span>
+          </div>
           <div class="absolute bottom-0 w-full flex md:hidden justify-center">
-            <div class="pb-5 text-neutral-100 bouncing"> 
+            <div class="pb-10 text-neutral-100 bouncing"> 
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M6 17.59L7.41 19L12 14.42L16.59 19L18 17.59l-6-6z"/><path fill="currentColor" d="m6 11l1.41 1.41L12 7.83l4.59 4.58L18 11l-6-6z"/></svg>
             </div>
           </div>
