@@ -4,7 +4,7 @@ Display user top artist, playlist, tracks and shows with data from Spotify API.
 ---
 
 ## Preview
-![Statify Screenshot Picture](https://drive.google.com/uc?id=1d4Mqy4qAj5Lk3vm68hGnOdXn_w3nYW_q)
+![Statify Screenshot Picture](https://s6.imgcdn.dev/Zgwy2.png)
 
 ## Setup Your Own
 #### Setup Spotify for Developer
