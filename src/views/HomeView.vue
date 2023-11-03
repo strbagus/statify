@@ -88,7 +88,6 @@ export default {
           } else if (name == 'show') {
             this.shows = data.items
           }
-          console.log(data)
           if (import.meta.env.VITE_APP_ENV == 'dev' && data.error) {
             console.log(data.error)
           }
