@@ -44,7 +44,7 @@ export default {
         <div class="w-full md:max-w-[450px] h-screen md:max-h-[600px] fixed md:relative">
           <img src="../assets/images/eunji.jpg" class="absolute top-0 left-0 object-cover h-full w-full">
           <div class="relative top-1/2 ml-5 block md:hidden">
-            <h1 class="text-white text-4xl font-semibold italic">Statify</h1>
+            <h1 class="text-white text-4xl font-semibold italic">My List</h1>
             <span class="text-neutral-100">See your Spotify top items.</span>
           </div>
           <div class="absolute bottom-0 w-full flex md:hidden justify-center">
