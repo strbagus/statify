@@ -5,14 +5,13 @@ export default {
   mounted() {
     if (!localStorage.getItem('authCode') || localStorage.getItem('authCode').accessToken === null) {
       this.logout()
-    }else{
-      this.localToData()
-      this.spotCallAPI()
-      this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
-      this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7&time_range=short_term', 'artist')
-      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4&time_range=short_term', 'song')
     }
+    this.localToData()
+    this.spotCallAPI()
+    this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
+    this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7&time_range=short_term', 'artist')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4&time_range=short_term', 'song')
   },
   components: {
     RouterLink,
@@ -46,6 +45,9 @@ export default {
   },
   watch: {
     'errors': function () {
+      if (import.meta.env.VITE_APP_ENV == 'dev') {
+        console.log(errors)
+      }
       this.logout()
     }
   },
@@ -75,6 +77,9 @@ export default {
             this.songs = data.items
           } else if (name == 'show') {
             this.shows = data.items
+          }
+          if (import.meta.env.VITE_APP_ENV == 'dev' && data.error) {
+            console.log(data.error)
           }
         })
     },
