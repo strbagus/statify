@@ -1,168 +1,183 @@
 <script lang="js">
-  import { RouterLink } from 'vue-router'
-  import Icon from '@/components/Icon.vue'
-  export default {
-    mounted() {
-      if(!localStorage.getItem('authCode')||localStorage.getItem('authCode').accessToken===null){
-        this.logout()
-      }else{
-        this.localToData()
-        this.spotCallAPI()
-        this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
-        this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-        this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7&time_range=short_term', 'artist')
-        this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4&time_range=short_term', 'song')
-      }
-    },
-    components: {
-      RouterLink,
-      Icon,
-    },
-    data() {
-      return {
-        authCode: {
-          accessToken: null,
-          tokenType: null,
-          expiredIn: null,
-          state: null,
-        },
-        user: {
-          name: null,
-          url: null,
-        },
-        displays: {
-          nav: false,
-          artist: true,
-          playlist: true,
-          song: false,
-          show: false,
-        },
-        artists: [],
-        playlists: [],
-        songs: [],
-        shows: [],
-        errors: null,
-      }
-    },
-    watch: {
-      'errors': function () {
-        this.logout()
-      }
-    },
-    methods: {
-      localToData: function(){
-        const authCode = JSON.parse(localStorage.getItem('authCode'))
-        this.authCode.accessToken = authCode.accessToken
-        this.authCode.tokenType = authCode.tokenType
-        this.authCode.expiredIn = authCode.expiredIn
-        this.authCode.state = authCode.state
+import { RouterLink } from 'vue-router'
+import Icon from '@/components/Icon.vue'
+export default {
+  mounted() {
+    if (!localStorage.getItem('authCode') || localStorage.getItem('authCode').accessToken === null) {
+      this.logout()
+    }else{
+      this.localToData()
+      this.spotCallAPI()
+      this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
+      this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7&time_range=short_term', 'artist')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4&time_range=short_term', 'song')
+    }
+  },
+  components: {
+    RouterLink,
+    Icon,
+  },
+  data() {
+    return {
+      authCode: {
+        accessToken: null,
+        tokenType: null,
+        expiredIn: null,
+        state: null,
       },
-      fetchAPI: function(url, name){
-        fetch(url, {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer '+this.authCode.accessToken,
-          },
+      user: {
+        name: null,
+        url: null,
+      },
+      displays: {
+        nav: false,
+        artist: true,
+        playlist: true,
+        song: false,
+        show: false,
+      },
+      artists: [],
+      playlists: [],
+      songs: [],
+      shows: [],
+      errors: null,
+    }
+  },
+  watch: {
+    'errors': function () {
+      this.logout()
+    }
+  },
+  methods: {
+    localToData: function () {
+      const authCode = JSON.parse(localStorage.getItem('authCode'))
+      this.authCode.accessToken = authCode.accessToken
+      this.authCode.tokenType = authCode.tokenType
+      this.authCode.expiredIn = authCode.expiredIn
+      this.authCode.state = authCode.state
+    },
+    fetchAPI: function (url, name) {
+      fetch(url, {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.authCode.accessToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (name == 'artist') {
+            this.artists = data.items
+          } else if (name == 'playlist') {
+            this.playlists = data.items
+          } else if (name == 'song') {
+            this.songs = data.items
+          } else if (name == 'show') {
+            this.shows = data.items
+          }
         })
-          .then((response) => response.json())
-          .then((data) => {
-              if(name=='artist'){
-                this.artists = data.items
-              }else if(name=='playlist'){
-                this.playlists = data.items
-              }else if(name=='song'){
-                this.songs = data.items
-              }else if(name=='show'){
-                this.shows = data.items
-              }
-          })
-      },
-      spotCallAPI: function(){
-        function handleErrors(response) {
-          if (!response.ok) throw new Error(response.status);
-          return response;
-        }
-          fetch('https://api.spotify.com/v1/me', {
-            method: 'get',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer '+this.authCode.accessToken,
-            },
-          })
-            .then(handleErrors)
-            .then((response) => response.json())
-            .then((data) => {
-              this.user.name = data.display_name
-              this.user.url = data.images.length>0 ? data.images[0].url : null
-            })
-            .catch(error => this.errors=error)
-      },
-      logout: function(){
-        localStorage.removeItem('authCode')
-        this.$router.replace('/login')
-      }
     },
-  }
+    spotCallAPI: function () {
+      function handleErrors(response) {
+        if (!response.ok) throw new Error(response.status);
+        return response;
+      }
+      fetch('https://api.spotify.com/v1/me', {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.authCode.accessToken,
+        },
+      })
+        .then(handleErrors)
+        .then((response) => response.json())
+        .then((data) => {
+          this.user.name = data.display_name
+          this.user.url = data.images.length > 0 ? data.images[0].url : null
+        })
+        .catch(error => this.errors = error)
+    },
+    logout: function () {
+      localStorage.removeItem('authCode')
+      this.$router.replace('/login')
+    }
+  },
+}
 </script>
 
 <template>
   <main class="min-h-screen flex flex-col justify-center items-center relative">
-    <div v-if="displays.nav" class="fixed h-screen w-full bg-neutral-900 opacity-70 z-30 cursor-pointer" @click="this.displays.nav=false"></div>
+    <div v-if="displays.nav" class="fixed h-screen w-full bg-neutral-900 opacity-70 z-30 cursor-pointer"
+      @click="this.displays.nav = false"></div>
     <div class="fixed top-0 right-0 z-50">
       <input type="checkbox" v-model="displays.nav" id="nav-toggle" class="hidden">
       <label for="nav-toggle" class="text-neutral-200 cursor-pointer">
-        <svg v-if="!displays.nav" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="m14 18l-6-6l6-6l1.4 1.4l-4.6 4.6l4.6 4.6L14 18Z"/></svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M9.4 18L8 16.6l4.6-4.6L8 7.4L9.4 6l6 6l-6 6Z"/></svg>
+        <svg v-if="!displays.nav" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+          <path fill="currentColor" d="m14 18l-6-6l6-6l1.4 1.4l-4.6 4.6l4.6 4.6L14 18Z" />
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M9.4 18L8 16.6l4.6-4.6L8 7.4L9.4 6l6 6l-6 6Z" />
+        </svg>
       </label>
     </div>
-    <div v-if="displays.nav" class="bg-gradient-to-t from-zinc-800 to-neutral-800 h-screen w-[300px] pt-12 px-10 fixed top-0 right-0 z-40 flex flex-col justify-between">
+    <div v-if="displays.nav"
+      class="bg-gradient-to-t from-zinc-800 to-neutral-800 h-screen w-[300px] pt-12 px-10 fixed top-0 right-0 z-40 flex flex-col justify-between">
       <div>
         <div class="flex">
-          <img v-if="user.url!==null" :src="user.url" alt="profile" class="h-6 w-6 rounded-xl">
+          <img v-if="user.url !== null" :src="user.url" alt="profile" class="h-6 w-6 rounded-xl">
           <span class="text-white px-3 text-lg truncate font-semibold italic">{{ user.name }}</span>
         </div>
         <div class="">
           <div class="text-xl text-white mt-5 mb-2">Top Items:</div>
           <ul>
-            <li><input type="checkbox" v-model="displays.artist" id="artist-toggle"><label class="text-white" for="artist-toggle"> Artists</label></li>
-            <li><input type="checkbox" v-model="displays.playlist" id="playlist-toggle"><label class="text-white" for="playlist-toggle"> Playlists</label></li>
-            <li><input type="checkbox" v-model="displays.song" id="song-toggle"><label class="text-white" for="song-toggle"> Tracks</label></li>
-            <li><input type="checkbox" v-model="displays.show" id="show-toggle"><label class="text-white" for="show-toggle"> Shows</label></li>
+            <li><input type="checkbox" v-model="displays.artist" id="artist-toggle"><label class="text-white"
+                for="artist-toggle"> Artists</label></li>
+            <li><input type="checkbox" v-model="displays.playlist" id="playlist-toggle"><label class="text-white"
+                for="playlist-toggle"> Playlists</label></li>
+            <li><input type="checkbox" v-model="displays.song" id="song-toggle"><label class="text-white"
+                for="song-toggle"> Tracks</label></li>
+            <li><input type="checkbox" v-model="displays.show" id="show-toggle"><label class="text-white"
+                for="show-toggle"> Shows</label></li>
           </ul>
         </div>
       </div>
       <div>
         <div class="flex justify-center">
-          <div class="flex items-center bg-zinc-700 rounded-xl py-1 px-3 cursor-pointer hover:border-zinc-300 border border-transparent duration-100" @click="logout">
+          <div
+            class="flex items-center bg-zinc-700 rounded-xl py-1 px-3 cursor-pointer hover:border-zinc-300 border border-transparent duration-100"
+            @click="logout">
             <div class="text-white mr-3">Logout</div>
-              <icon name="icon_logout" class="h-4 w-4 fill-red-500" />
+            <icon name="icon_logout" class="h-4 w-4 fill-red-500" />
           </div>
         </div>
-        <div class="mt-10 mb-2 flex justify-center text-zinc-700 text-sm italic">  
+        <div class="mt-10 mb-2 flex justify-center text-zinc-700 text-sm italic">
           Author:<a href="https://strbagus.com" class="text-zinc-400 font-semibold" target="blank">&nbsp;strbagus</a>
         </div>
       </div>
     </div>
-    <div v-if="displays.artist===true" class="w-full md:max-w-[450px] mx-auto px-2">
+    <div v-if="displays.artist === true" class="w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Artists</h2>
-      <div v-if="artists.length>0">
+      <div v-if="artists.length > 0">
         <div class="flex w-full justify-evenly">
           <div class="flex flex-col items-center w-1/3 justify-end">
-            <img :src="artists[1].images[2].url" :alt="artists[1].name" class="h-20 w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200 rounded-full">
+            <img :src="artists[1].images[2].url" :alt="artists[1].name"
+              class="h-20 w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200 rounded-full">
             <div class="mt-2 text-base truncate text-white w-full text-center">{{ artists[1].name }}</div>
           </div>
           <div class="flex flex-col items-center w-1/3 justify-end">
-            <img :src="artists[0].images[2].url" :alt="artists[0].name" class="h-24 w-24 rounded-full border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
+            <img :src="artists[0].images[2].url" :alt="artists[0].name"
+              class="h-24 w-24 rounded-full border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
             <div class="mt-2 text-lg truncate text-white w-full text-center">{{ artists[0].name }}</div>
           </div>
           <div class="flex flex-col items-center w-1/3 justify-end">
-            <img :src="artists[2].images[2].url" :alt="artists[2].name" class="h-16 w-16 rounded-full border border-2 shadow-lg shadow-amber-600 border-amber-700">
+            <img :src="artists[2].images[2].url" :alt="artists[2].name"
+              class="h-16 w-16 rounded-full border border-2 shadow-lg shadow-amber-600 border-amber-700">
             <div class="mt-2 text-base truncate text-white w-full text-center">{{ artists[2].name }}</div>
           </div>
         </div>
         <div class="flex flex-wrap">
-          <div v-for="artist in artists.slice(3,7)" class="px-2 py-1 w-1/2">
+          <div v-for="artist in artists.slice(3, 7)" class="px-2 py-1 w-1/2">
             <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-lg flex overflow-hidden">
               <div class="w-1/4 relative">
                 <img :src="artist.images[2].url" :alt="artist.name" class="h-full w-full">
@@ -182,10 +197,11 @@
     </div>
     <div v-if="displays.playlist" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Playlists</h2>
-      <div v-if="playlists.length>0" class="w-full">
+      <div v-if="playlists.length > 0" class="w-full">
         <div class="flex justify-evenly">
           <div v-for="playlist in playlists" class="w-1/4 px-2">
-            <img :src="playlist.images.length>1 ? playlist.images[1].url : playlist.images[0].url" alt="" class="w-full" style="aspect-ratio: 1/1">
+            <img :src="playlist.images.length > 1 ? playlist.images[1].url : playlist.images[0].url" alt="" class="w-full"
+              style="aspect-ratio: 1/1">
             <div class="flex flex-col mt-1">
               <span class="text-white text-xs truncate">{{ playlist.name }}</span>
             </div>
@@ -198,12 +214,13 @@
     </div>
     <div v-if="displays.song" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Tracks</h2>
-      <div v-if="songs.length>0" class="w-full">
+      <div v-if="songs.length > 0" class="w-full">
         <div class="flex flex-wrap justify-evenly">
           <div v-for="song in songs" class="px-2 py-1 w-1/2">
             <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-lg overflow-hidden flex">
               <div class="w-1/4 relative" style="aspect-ratio: 1/1">
-                <img :src="song.album.images[2].url" :alt="song.name" class="absolute top-0 left-0 w-full h-full object-cover">
+                <img :src="song.album.images[2].url" :alt="song.name"
+                  class="absolute top-0 left-0 w-full h-full object-cover">
               </div>
               <div class="py-1 text-white w-3/4 px-2 flex flex-col justify-between">
                 <div class="text-sm truncate">{{ song.name }}</div>
@@ -219,7 +236,7 @@
     </div>
     <div v-if="displays.show" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Shows</h2>
-      <div v-if="shows.length>0" class="w-full">
+      <div v-if="shows.length > 0" class="w-full">
         <div class="flex justify-evenly">
           <div v-for="show in shows" class="w-1/4 px-2">
             <img :src="show.show.images[1].url" alt="" class="w-full" style="aspect-ratio: 1/1">
