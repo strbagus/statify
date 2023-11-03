@@ -8,10 +8,11 @@ export default {
     }
     this.localToData()
     this.spotCallAPI()
+    this.timeRange = 'long_term'
     this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
     this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7&time_range=short_term', 'artist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4&time_range=short_term', 'song')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
   },
   components: {
     RouterLink,
@@ -36,6 +37,7 @@ export default {
         song: false,
         show: false,
       },
+      timeRange: null,
       artists: [],
       playlists: [],
       songs: [],
@@ -49,6 +51,13 @@ export default {
         console.log(errors)
       }
       this.logout()
+    },
+    'timeRange': function () {
+      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
+      if (import.meta.env.VITE_APP_ENV == 'dev') {
+        console.log(`TimeRange Changed to: ${this.timeRange}`)
+      }
     }
   },
   methods: {
@@ -59,7 +68,8 @@ export default {
       this.authCode.expiredIn = authCode.expiredIn
       this.authCode.state = authCode.state
     },
-    fetchAPI: function (url, name) {
+    fetchAPI: function (rawUrl, name) {
+      const url = name == 'show' || name == 'playlist' ? rawUrl : `${rawUrl}&time_range=${this.timeRange}`
       fetch(url, {
         method: 'get',
         headers: {
@@ -78,6 +88,7 @@ export default {
           } else if (name == 'show') {
             this.shows = data.items
           }
+          console.log(data)
           if (import.meta.env.VITE_APP_ENV == 'dev' && data.error) {
             console.log(data.error)
           }
@@ -145,6 +156,18 @@ export default {
             <li><input type="checkbox" v-model="displays.show" id="show-toggle"><label class="text-white"
                 for="show-toggle"> Shows</label></li>
           </ul>
+        </div>
+        <div>
+          <div class="text-xl text-white mt-5 mb-2">Time Range:</div>
+          <ul>
+            <li><input type="radio" v-model="timeRange" value="long_term" id="time-long"><label class="text-white"
+                for="time-long"> Several Years</label></li>
+            <li><input type="radio" v-model="timeRange" value="medium_term" id="time-medium"><label class="text-white"
+                for="time-medium"> 6 Months</label></li>
+            <li><input type="radio" v-model="timeRange" value="short_term" id="time-short"><label class="text-white"
+                for="time-short"> 4 Weeks</label></li>
+          </ul>
+
         </div>
       </div>
       <div>
