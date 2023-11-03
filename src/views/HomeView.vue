@@ -33,11 +33,11 @@ export default {
       displays: {
         nav: false,
         artist: true,
-        playlist: true,
-        song: false,
+        playlist: false,
+        song: true,
         show: false,
       },
-      timeRange: null,
+      timeRange: "medium_term",
       artists: [],
       playlists: [],
       songs: [],
@@ -191,17 +191,23 @@ export default {
           <div class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[1].images[2].url" :alt="artists[1].name"
               class="h-20 w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200 rounded-full">
-            <div class="mt-2 text-base truncate text-white w-full text-center">{{ artists[1].name }}</div>
+            <div class="mt-2 text-base truncate text-white w-full text-center hover:text-cyan-300">
+              <a :href="artists[1].external_urls.spotify" target="blank">{{ artists[1].name }}</a>
+            </div>
           </div>
           <div class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[0].images[2].url" :alt="artists[0].name"
               class="h-24 w-24 rounded-full border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
-            <div class="mt-2 text-lg truncate text-white w-full text-center">{{ artists[0].name }}</div>
+            <div class="mt-2 text-lg truncate text-white w-full text-center hover:text-cyan-300">
+              <a :href="artists[0].external_urls.spotify" target="blank">{{ artists[0].name }}</a>
+            </div>
           </div>
           <div class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[2].images[2].url" :alt="artists[2].name"
               class="h-16 w-16 rounded-full border border-2 shadow-lg shadow-amber-600 border-amber-700">
-            <div class="mt-2 text-base truncate text-white w-full text-center">{{ artists[2].name }}</div>
+            <div class="mt-2 text-base truncate text-white w-full text-center hover:text-cyan-300">
+              <a :href="artists[2].external_urls.spotify" target="blank">{{ artists[2].name }}</a>
+            </div>
           </div>
         </div>
         <div class="flex flex-wrap">
@@ -211,8 +217,8 @@ export default {
                 <img :src="artist.images[2].url" :alt="artist.name" class="h-full w-full">
               </div>
               <div class="text-white w-3/4 flex items-center pl-2 pr-1">
-                <div class="truncate">
-                  {{ artist.name }}
+                <div class="truncate hover:text-cyan-300">
+                  <a :href="artist.external_urls.spotify" target="blank">{{ artist.name }}</a>
                 </div>
               </div>
             </div>
@@ -228,10 +234,12 @@ export default {
       <div v-if="playlists.length > 0" class="w-full">
         <div class="flex justify-evenly">
           <div v-for="playlist in playlists" class="w-1/4 px-2">
-            <img :src="playlist.images.length > 1 ? playlist.images[1].url : playlist.images[0].url" alt="" class="w-full"
+            <img :src="playlist.images.length > 1 ? playlist.images[1].url : playlist.images[0].url" :alt="playlist.name" class="w-full"
               style="aspect-ratio: 1/1">
             <div class="flex flex-col mt-1">
-              <span class="text-white text-xs truncate">{{ playlist.name }}</span>
+              <span class="text-white hover:text-cyan-300 text-xs truncate">
+                  <a :href="playlist.external_urls.spotify" target="blank">{{ playlist.name }}</a>
+              </span>
             </div>
           </div>
         </div>
@@ -247,12 +255,16 @@ export default {
           <div v-for="song in songs" class="px-2 py-1 w-1/2">
             <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-lg overflow-hidden flex">
               <div class="w-1/4 relative" style="aspect-ratio: 1/1">
-                <img :src="song.album.images[2].url" :alt="song.name"
+                <img :src="song.album.images[2].url" :alt="`${song.name} - ${song.artists[0].name}`"
                   class="absolute top-0 left-0 w-full h-full object-cover">
               </div>
               <div class="py-1 text-white w-3/4 px-2 flex flex-col justify-between">
-                <div class="text-sm truncate">{{ song.name }}</div>
-                <div class="text-xs truncate text-neutral-300">{{ song.artists[0].name }}</div>
+                <div class="text-sm truncate hover:text-cyan-300">
+                  <a :href="song.external_urls.spotify" target="blank">{{ song.name }}</a>
+                </div>
+                <div class="text-xs truncate text-neutral-300 hover:text-cyan-400">
+                  <a :href="song.artists[0].external_urls.spotify" target="blank">{{ song.artists[0].name }}</a>
+                </div>
               </div>
             </div>
           </div>
@@ -267,9 +279,11 @@ export default {
       <div v-if="shows.length > 0" class="w-full">
         <div class="flex justify-evenly">
           <div v-for="show in shows" class="w-1/4 px-2">
-            <img :src="show.show.images[1].url" alt="" class="w-full" style="aspect-ratio: 1/1">
+            <img :src="show.show.images[1].url" :alt="show.show.name" class="w-full" style="aspect-ratio: 1/1">
             <div class="flex flex-col">
-              <span class="whitespace-wrap text-center text-white text-xs mt-2">{{ show.show.name }}</span>
+              <span class="whitespace-wrap text-center text-white text-xs mt-2 hover:text-cyan-300">
+                <a :href="show.show.external_urls.spotify" target="blank">{{ show.show.name }}</a>
+              </span>
             </div>
           </div>
         </div>
