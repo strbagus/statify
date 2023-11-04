@@ -8,11 +8,11 @@ export default {
     }
     this.localToData()
     this.spotCallAPI()
-    this.timeRange = 'long_term'
+    this.timeRange = 'short_term'
     this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
     this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=9', 'artist')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=6', 'song')
   },
   components: {
     RouterLink,
@@ -37,7 +37,7 @@ export default {
         song: true,
         show: false,
       },
-      timeRange: "medium_term",
+      timeRange: "short_term",
       artists: [],
       playlists: [],
       songs: [],
@@ -53,8 +53,8 @@ export default {
       this.logout()
     },
     'timeRange': function () {
-      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
-      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=9', 'artist')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=6', 'song')
       if (import.meta.env.VITE_APP_ENV == 'dev') {
         console.log(`TimeRange Changed to: ${this.timeRange}`)
       }
@@ -187,21 +187,21 @@ export default {
       <h2 class="text-2xl text-semibold text-white">Artists</h2>
       <div v-if="artists.length > 0">
         <div class="flex w-full justify-evenly">
-          <div class="flex flex-col items-center w-1/3 justify-end">
+          <div v-if="artists[1]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[1].images[2].url" :alt="artists[1].name"
               class="h-20 w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200 rounded-full">
             <div class="mt-2 text-base truncate text-white w-full text-center hover:text-cyan-300">
               <a :href="artists[1].external_urls.spotify" target="blank">{{ artists[1].name }}</a>
             </div>
           </div>
-          <div class="flex flex-col items-center w-1/3 justify-end">
+          <div v-if="artists[0]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[0].images[2].url" :alt="artists[0].name"
               class="h-24 w-24 rounded-full border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
             <div class="mt-2 text-lg truncate text-white w-full text-center hover:text-cyan-300">
               <a :href="artists[0].external_urls.spotify" target="blank">{{ artists[0].name }}</a>
             </div>
           </div>
-          <div class="flex flex-col items-center w-1/3 justify-end">
+          <div v-if="artists[2]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[2].images[2].url" :alt="artists[2].name"
               class="h-16 w-16 rounded-full border border-2 shadow-lg shadow-amber-600 border-amber-700">
             <div class="mt-2 text-base truncate text-white w-full text-center hover:text-cyan-300">
@@ -210,7 +210,7 @@ export default {
           </div>
         </div>
         <div class="flex flex-wrap">
-          <div v-for="artist in artists.slice(3, 7)" class="px-2 py-1 w-1/2">
+          <div v-for="artist in artists.slice(3, 9)" class="px-2 py-1 w-1/2">
             <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-lg flex overflow-hidden">
               <div class="w-1/4 relative">
                 <img :src="artist.images[2].url" :alt="artist.name" class="h-full w-full">
