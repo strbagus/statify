@@ -122,7 +122,7 @@ export default {
 </script>
 
 <template>
-  <main class="min-h-screen flex flex-col justify-center items-center relative">
+  <main class="min-h-screen flex flex-col justify-center items-center relative py-12">
     <div v-if="displays.nav" class="fixed h-screen w-full bg-neutral-900 opacity-70 z-30 cursor-pointer"
       @click="this.displays.nav = false"></div>
     <div class="fixed top-0 right-0 z-50">
@@ -183,29 +183,49 @@ export default {
         </div>
       </div>
     </div>
+    <div class="max-w-[200px] pb-5">
+      <a href="https://open.spotify.com/">
+        <img src="SpotifyWText.svg" alt="Spotify Icon with Text">
+      </a>
+    </div>
     <div v-if="displays.artist === true" class="w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Artists</h2>
       <div v-if="artists.length > 0">
         <div class="flex w-full justify-evenly">
           <div v-if="artists[1]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[1].images[2].url" :alt="artists[1].name"
-              class="h-20 w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200 rounded-full">
-            <div class="mt-2 text-base truncate text-white w-full text-center hover:text-cyan-300">
-              <a :href="artists[1].external_urls.spotify" target="blank">{{ artists[1].name }}</a>
+              class="w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200">
+            <div
+              class="mt-2 text-base text-white w-full text-center hover:text-cyan-300 flex justify-center items-center group"
+              :title="`Listen ${artists[1].name}'s songs on Spotify`">
+              <div class="h-4 w-4 mr-1">
+                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
+              </div>
+              <a :href="artists[1].external_urls.spotify" target="blank" class="mr-4 truncate">{{ artists[1].name }}</a>
             </div>
           </div>
           <div v-if="artists[0]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[0].images[2].url" :alt="artists[0].name"
-              class="h-24 w-24 rounded-full border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
-            <div class="mt-2 text-lg truncate text-white w-full text-center hover:text-cyan-300">
-              <a :href="artists[0].external_urls.spotify" target="blank">{{ artists[0].name }}</a>
+              class="w-24 border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
+            <div
+              class="mt-2 text-lg text-white w-full text-center hover:text-cyan-300 flex justify-center items-center group"
+              :title="`Listen ${artists[0].name}'s songs on Spotify`">
+              <div class="h-4 w-4 mr-1">
+                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
+              </div>
+              <a :href="artists[0].external_urls.spotify" target="blank" class="mr-4 truncate">{{ artists[0].name }}</a>
             </div>
           </div>
           <div v-if="artists[2]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[2].images[2].url" :alt="artists[2].name"
-              class="h-16 w-16 rounded-full border border-2 shadow-lg shadow-amber-600 border-amber-700">
-            <div class="mt-2 text-base truncate text-white w-full text-center hover:text-cyan-300">
-              <a :href="artists[2].external_urls.spotify" target="blank">{{ artists[2].name }}</a>
+              class="w-16 border border-2 shadow-lg shadow-amber-600 border-amber-700">
+            <div
+              class="mt-2 text-base text-white w-full text-center hover:text-cyan-300 flex justify-center items-center group"
+              :title="`Listen ${artists[2].name}'s songs on Spotify`">
+              <div class="h-4 w-4 mr-1">
+                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
+              </div>
+              <a :href="artists[2].external_urls.spotify" target="blank" class="mr-4 truncate">{{ artists[2].name }}</a>
             </div>
           </div>
         </div>
@@ -215,9 +235,11 @@ export default {
               <div class="w-1/4 relative">
                 <img :src="artist.images[2].url" :alt="artist.name" class="h-full w-full">
               </div>
-              <div class="text-white w-3/4 flex items-center pl-2 pr-1">
-                <div class="truncate hover:text-cyan-300">
-                  <a :href="artist.external_urls.spotify" target="blank">{{ artist.name }}</a>
+              <div class="text-white w-3/4 flex items-center pl-2 pr-1 group">
+                <a :href="artist.external_urls.spotify" target="blank" class="truncate hover:text-cyan-300"
+                  :title="`Listen ${artist.name}'s songs on Spotify`">{{ artist.name }}</a>
+                <div class="absolute right-0 bottom-1">
+                  <icon name="spotify" class="h-4 w-4 mr-1 group-hover:fill-[#1DB954]" />
                 </div>
               </div>
             </div>
@@ -233,11 +255,14 @@ export default {
       <div v-if="playlists.length > 0" class="w-full">
         <div class="flex justify-evenly">
           <div v-for="playlist in playlists" class="w-1/4 px-2">
-            <img :src="playlist.images.length > 1 ? playlist.images[1].url : playlist.images[0].url" :alt="playlist.name" class="w-full"
-              style="aspect-ratio: 1/1">
-            <div class="flex flex-col mt-1">
-              <span class="text-white hover:text-cyan-300 text-xs truncate">
-                  <a :href="playlist.external_urls.spotify" target="blank">{{ playlist.name }}</a>
+            <img :src="playlist.images.length > 1 ? playlist.images[1].url : playlist.images[0].url" :alt="playlist.name"
+              class="w-full" style="aspect-ratio: 1/1">
+            <div class="flex mt-1 group" :title="`Open ${playlist.name} Playlist on Spotify`">
+              <div class="h-4 w-4 mr-1">
+                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
+              </div>
+              <span class="text-white group-hover:text-cyan-300 text-xs truncate mr-2">
+                <a :href="playlist.external_urls.spotify" target="blank">{{ playlist.name }}</a>
               </span>
             </div>
           </div>
@@ -257,12 +282,18 @@ export default {
                 <img :src="song.album.images[2].url" :alt="`${song.name} - ${song.artists[0].name}`"
                   class="absolute top-0 left-0 w-full h-full object-cover">
               </div>
-              <div class="py-1 text-white w-3/4 px-2 flex flex-col justify-between">
+              <div class="py-1 text-white w-3/4 px-2 flex flex-col justify-between group">
                 <div class="text-sm truncate hover:text-cyan-300">
-                  <a :href="song.external_urls.spotify" target="blank">{{ song.name }}</a>
+                  <a :href="song.external_urls.spotify" class="text-sm truncate hover:text-cyan-300" target="blank"
+                    :title="`Listen ${song.name} on Spotify`">{{ song.name }}</a>
                 </div>
-                <div class="text-xs truncate text-neutral-300 hover:text-cyan-400">
-                  <a :href="song.artists[0].external_urls.spotify" target="blank">{{ song.artists[0].name }}</a>
+                <div class="text-xs text-neutral-300 hover:text-cyan-400 flex justify-between items-center">
+                  <a :href="song.artists[0].external_urls.spotify" target="blank" class="truncate pr-1"
+                    :title="`Listen ${song.artists[0].name}'s songs on Spotify`">{{
+                      song.artists[0].name }}</a>
+                  <div class="h-4 w-4">
+                    <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -279,8 +310,11 @@ export default {
         <div class="flex justify-evenly">
           <div v-for="show in shows" class="w-1/4 px-2">
             <img :src="show.show.images[1].url" :alt="show.show.name" class="w-full" style="aspect-ratio: 1/1">
-            <div class="flex flex-col">
-              <span class="whitespace-wrap text-center text-white text-xs mt-2 hover:text-cyan-300">
+            <div class="flex items-center group" :title="`Listen ${show.show.name}'s show on Spotify`">
+              <div class="h-4 w-4 mr-1">
+                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
+              </div>
+              <span class="whitespace-wrap text-center text-white text-xs mt-2 group-hover:text-cyan-300">
                 <a :href="show.show.external_urls.spotify" target="blank">{{ show.show.name }}</a>
               </span>
             </div>
