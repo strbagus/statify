@@ -11,8 +11,8 @@ export default {
     this.timeRange = 'short_term'
     this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
     this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=9', 'artist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=6', 'song')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
+    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
   },
   components: {
     RouterLink,
@@ -53,8 +53,8 @@ export default {
       this.logout()
     },
     'timeRange': function () {
-      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=9', 'artist')
-      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=6', 'song')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
+      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
       if (import.meta.env.VITE_APP_ENV == 'dev') {
         console.log(`TimeRange Changed to: ${this.timeRange}`)
       }
@@ -231,7 +231,7 @@ export default {
         </div>
         <div class="flex flex-wrap">
           <div v-for="artist in artists.slice(3, 9)" class="px-2 py-1 w-1/2">
-            <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-lg flex overflow-hidden">
+            <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-r-lg flex overflow-hidden">
               <div class="w-1/4 relative">
                 <img :src="artist.images[2].url" :alt="artist.name" class="h-full w-full">
               </div>
@@ -277,7 +277,7 @@ export default {
       <div v-if="songs.length > 0" class="w-full">
         <div class="flex flex-wrap justify-evenly">
           <div v-for="song in songs" class="px-2 py-1 w-1/2">
-            <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-lg overflow-hidden flex">
+            <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-r-lg overflow-hidden flex">
               <div class="w-1/4 relative" style="aspect-ratio: 1/1">
                 <img :src="song.album.images[2].url" :alt="`${song.name} - ${song.artists[0].name}`"
                   class="absolute top-0 left-0 w-full h-full object-cover">
