@@ -185,7 +185,7 @@ export default {
     </div>
     <div class="max-w-[200px] pb-5">
       <a href="https://open.spotify.com/">
-        <img src="SpotifyWText.svg" alt="Spotify Icon with Text">
+        <img src="/SpotifyWText.svg" alt="Spotify Icon with Text">
       </a>
     </div>
     <div v-if="displays.artist === true" class="w-full md:max-w-[450px] mx-auto px-2">
