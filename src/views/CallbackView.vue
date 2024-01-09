@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
 import { onMounted } from 'vue'
+import { cookieValueOrNull } from '@/utils/isCookieExist.js'
 
 const router = useRouter()
 const route = useRoute()
 
 onMounted(() => {
-  document.cookie.match(/^(.*;)?\s*access_token\s*=\s*[^;]+(.*)?$/) || !route.hash
+  cookieValueOrNull('accessToken') || !route.hash
   ? router.replace('/login') : setTokenLocal(authorize)
+
 })
 
 const extractHashURL = () => {
@@ -23,7 +25,7 @@ const extractHashURL = () => {
 }
 const authorize: Object = extractHashURL()
 
-const setCookie = (name: string, value: string, expires: any) => {
+const setCookie = (name: string, value: string, expires: Date) => {
   document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/`
 }
 const setTokenLocal = (data: any) => {

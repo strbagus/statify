@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { cookieValueOrNull } from '@/utils/isCookieExist.js';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,6 +8,7 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: () => import("@/views/HomeView.vue"),
+      meta: { requiresAuth: true },
     },
     {
       path: "/login",
@@ -20,5 +22,18 @@ const router = createRouter({
     },
   ],
 });
+
+router.beforeEach((to, _, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    const token = cookieValueOrNull('accessToken')
+    if (!token) {
+      next({ name: 'login' });
+    } else {
+      next()
+    }
+  } else {
+    next();
+  }
+})
 
 export default router;

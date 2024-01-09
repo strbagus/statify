@@ -1,18 +1,15 @@
 <script lang="js">
 import { RouterLink } from 'vue-router'
+import { cookieValueOrNull } from '@/utils/isCookieExist.ts'
 import Icon from '@/components/Icon.vue'
 export default {
   mounted() {
-    if (!localStorage.getItem('authCode') || localStorage.getItem('authCode').accessToken === null) {
-      this.logout()
-    }
-    this.localToData()
     this.spotCallAPI()
     this.timeRange = 'short_term'
-    this.fetchAPI('https://api.spotify.com/v1/me/shows?offset=0&limit=4', 'show')
-    this.fetchAPI('https://api.spotify.com/v1/me/playlists?limit=4', 'playlist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
-    this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
+    this.fetchAPI('/v1/me/shows?offset=0&limit=4', 'show')
+    this.fetchAPI('/v1/me/playlists?limit=4', 'playlist')
+    this.fetchAPI('/v1/me/top/artists?limit=7', 'artist')
+    this.fetchAPI('/v1/me/top/tracks?limit=4', 'song')
   },
   components: {
     RouterLink,
@@ -20,12 +17,6 @@ export default {
   },
   data() {
     return {
-      authCode: {
-        accessToken: null,
-        tokenType: null,
-        expiredIn: null,
-        state: null,
-      },
       user: {
         name: null,
         url: null,
@@ -53,28 +44,21 @@ export default {
       this.logout()
     },
     'timeRange': function () {
-      this.fetchAPI('https://api.spotify.com/v1/me/top/artists?limit=7', 'artist')
-      this.fetchAPI('https://api.spotify.com/v1/me/top/tracks?limit=4', 'song')
+      this.fetchAPI('/v1/me/top/artists?limit=7', 'artist')
+      this.fetchAPI('/v1/me/top/tracks?limit=4', 'song')
       if (import.meta.env.VITE_APP_ENV == 'dev') {
         console.log(`TimeRange Changed to: ${this.timeRange}`)
       }
     }
   },
   methods: {
-    localToData: function () {
-      const authCode = JSON.parse(localStorage.getItem('authCode'))
-      this.authCode.accessToken = authCode.accessToken
-      this.authCode.tokenType = authCode.tokenType
-      this.authCode.expiredIn = authCode.expiredIn
-      this.authCode.state = authCode.state
-    },
     fetchAPI: function (rawUrl, name) {
-      const url = name == 'show' || name == 'playlist' ? rawUrl : `${rawUrl}&time_range=${this.timeRange}`
+      const url = name == 'show' || name == 'playlist' ? rawUrl : `${import.meta.env.VITE_ROOT_API_URL}${rawUrl}&time_range=${this.timeRange}`
       fetch(url, {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.authCode.accessToken,
+          'Authorization': 'Bearer ' + cookieValueOrNull('accessToken'),
         },
       })
         .then((response) => response.json())
@@ -102,7 +86,7 @@ export default {
         method: 'get',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.authCode.accessToken,
+          'Authorization': 'Bearer ' + cookieValueOrNull('accessToken'),
         },
       })
         .then(handleErrors)

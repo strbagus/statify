@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { cookieValueOrNull } from '@/utils/isCookieExist.js'
 
+const router = useRouter();
+onMounted(() => {
+  cookieValueOrNull('accessToken') ? router.replace('/') : getAuthURL();
+})
 const authUrl = ref('')
 const generateString = (length: Number) => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -23,11 +28,6 @@ const getAuthURL = () => {
 const authButton = () => {
   window.location.href = authUrl.value;
 }
-const router = useRouter();
-onMounted(() => {
-  const tokenValid = localStorage.getItem('authCode');
-  tokenValid !== null ? router.replace('/') : getAuthURL();
-})
 </script>
 <template>
   <main class="min-h-screen">
