@@ -1,42 +1,38 @@
-<script lang="js">
-import { RouterLink } from 'vue-router'
-export default {
-  mounted() {
-    this.getTokenURL()
-  },
-  component: {
-    RouterLink,
-  },
-  data() {
-    return {
-      authorize: {
-        accessToken: null,
-        tokenType: null,
-        expiredIn: null,
-        state: null,
-      },
-    }
-  },
-  methods: {
-    getTokenURL: function () {
-      const fullUrl = window.location.href
-      const queryString = fullUrl.replace(import.meta.env.VITE_REDIRECT_URI + '#', '?')
-      const urlParams = new URLSearchParams(queryString)
-      this.authorize.accessToken = urlParams.get('access_token')
-      this.authorize.tokenType = urlParams.get('token_type')
-      this.authorize.expiredIn = urlParams.get('expires_in')
-      this.authorize.state = urlParams.get('state')
-      if (urlParams.get('access_token') != null) {
-        this.setTokenLocal()
-      } else {
-        this.$router.replace('/login')
-      }
-    },
-    setTokenLocal: function () {
-      localStorage.setItem("authCode", JSON.stringify(this.authorize))
-      this.$router.replace('/')
-    }
-  }
+<script setup lang="ts">
+import { useRouter, useRoute } from 'vue-router'
+import { onMounted } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
+
+onMounted(() => {
+  document.cookie.match(/^(.*;)?\s*access_token\s*=\s*[^;]+(.*)?$/) || !route.hash
+  ? router.replace('/login') : setTokenLocal(authorize)
+})
+
+const extractHashURL = () => {
+  const rawHash = route.hash
+  const hash = rawHash.slice(1)
+  const hashParamsArray = hash.split('&');
+  const hashParams = {};
+  hashParamsArray.forEach(param => {
+    const [key, value] = param.split('=');
+    hashParams[key] = value;
+  })
+  return hashParams;
+}
+const authorize: Object = extractHashURL()
+
+const setCookie = (name: string, value: string, expires: any) => {
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/`
+}
+const setTokenLocal = (data: any) => {
+  const expires = new Date(Date.now() + data.expires_in * 1000)
+  setCookie('accessToken', data.access_token, expires)
+  setCookie('tokenType', data.token_type, expires)
+  setCookie('state', data.state, expires)
+
+  router.replace('/')
 }
 </script>
 <template></template>

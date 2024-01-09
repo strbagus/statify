@@ -1,41 +1,33 @@
-<script lang="js">
-export default {
-  data() {
-    return {
-      authUrl: null,
-    }
-  },
-  mounted() {
-    const tokenValid = localStorage.getItem('authCode')
-    if (tokenValid !== null) {
-      this.$router.replace('/')
-    } else {
-      this.getAuthURL()
-    }
-  },
-  methods: {
-    generateString: function (length) {
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      const charactersLength = characters.length;
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      return result;
-    },
-    getAuthURL: function () {
-      const clientID = import.meta.env.VITE_CLIENT_ID
-      const redirect_uri = encodeURI(import.meta.env.VITE_REDIRECT_URI)
-      const state = this.generateString(16)
-      // const scope = 'user-read-email+user-read-private+user-top-read+user-library-read';
-      const scope = 'user-top-read+user-library-read';
-      this.authUrl = 'https://accounts.spotify.com/authorize?response_type=token&redirect_uri=' + redirect_uri + '&client_id=' + clientID + '&scope=' + scope + '&state=' + state
-    },
-    authButton: function () {
-      window.location.href = this.authUrl
-    }
-  },
+<script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const authUrl = ref('')
+const generateString = (length: Number) => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 }
+const getAuthURL = () => {
+  const clientID = import.meta.env.VITE_CLIENT_ID
+  const redirect_uri = encodeURI(import.meta.env.VITE_REDIRECT_URI)
+  const state = generateString(16)
+  // const scope = 'user-read-email+user-read-private+user-top-read+user-library-read';
+  const scope = 'user-top-read+user-library-read';
+  authUrl.value = 'https://accounts.spotify.com/authorize?response_type=token&redirect_uri=' + redirect_uri + '&client_id=' + clientID + '&scope=' + scope + '&state=' + state
+}
+const authButton = () => {
+  window.location.href = authUrl.value;
+}
+const router = useRouter();
+onMounted(() => {
+  const tokenValid = localStorage.getItem('authCode');
+  tokenValid !== null ? router.replace('/') : getAuthURL();
+})
 </script>
 <template>
   <main class="min-h-screen">
@@ -47,7 +39,7 @@ export default {
             <h1 class="text-white text-4xl font-semibold italic">My List</h1>
             <span class="text-neutral-100">See your Spotify top items.</span>
           </div>
-          <div class="absolute bottom-0 w-full flex md:hidden justify-center">
+          <div class="absolute bottom-10 w-full flex md:hidden justify-center">
             <div class="pb-10 text-neutral-100 bouncing">
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M6 17.59L7.41 19L12 14.42L16.59 19L18 17.59l-6-6z" />
@@ -108,4 +100,5 @@ export default {
   75% {
     bottom: 0;
   }
-}</style>
+}
+</style>
