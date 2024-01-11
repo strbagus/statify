@@ -98,7 +98,9 @@ export default {
         .catch(error => this.errors = error)
     },
     logout: function () {
-      localStorage.removeItem('authCode')
+      document.cookie = 'state=; Max-Age=0'
+      document.cookie = 'tokenType=; Max-Age=0'
+      document.cookie = 'accessToken=; Max-Age=0'
       this.$router.replace('/login')
     }
   },
