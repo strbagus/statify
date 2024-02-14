@@ -20,8 +20,19 @@ const router = createRouter({
       name: "callback",
       component: () => import("@/views/CallbackView.vue"),
     },
-  ],
-});
+    {
+      // Make sure always in last order 
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFound.vue'),
+    }
+  ]
+})
+
+router.resolve({
+  name: 'not-found',
+  params: { pathMatch: ['not', 'found'] },
+}).href
 
 router.beforeEach((to, _, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
