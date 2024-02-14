@@ -26,8 +26,9 @@ const displays = reactive({
 })
 const timeRange = ref<string>("short_term")
 const artists = ref<any>([])
+const artistsLoad = ref<boolean>(true)
 const songs = ref<any>([])
-const errors = ref<any>(null)
+const songsLoad = ref<boolean>(true)
 
 const fetchAPI = async (rawUrl: string, name: string) => {
   const url = `${import.meta.env.VITE_ROOT_API_URL}${rawUrl}&time_range=${timeRange.value}`
@@ -40,7 +41,13 @@ const fetchAPI = async (rawUrl: string, name: string) => {
       }
     })
     const data = await response.json()
-    name == 'artist' ? artists.value = data.items : songs.value = data.items
+    if (name == 'artist') {
+      artists.value = data.items
+      artistsLoad.value = false
+    } else {
+      songs.value = data.items
+      songsLoad.value = false
+    }
   } catch (error) {
     import.meta.env.VITE_APP_ENV == 'dev' && console.error('Error fetching data:', error)
   }
@@ -67,11 +74,9 @@ const logout = () => {
   document.cookie = 'accessToken=; Max-Age=0'
   router.replace('/login')
 }
-watch(errors, () => {
-  import.meta.env.VITE_APP_ENV == 'dev' && console.log(errors)
-  logout()
-})
 watch(timeRange, () => {
+  artistsLoad.value = true
+  songsLoad.value = true
   fetchAPI('me/top/artists?limit=7', 'artist')
   fetchAPI('me/top/tracks?limit=4', 'song')
   import.meta.env.VITE_APP_ENV == 'dev' && console.log(`TimeRange Changed to: ${timeRange.value}`)
@@ -144,7 +149,7 @@ watch(timeRange, () => {
     </div>
     <div v-if="displays.artist === true" class="w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Artists</h2>
-      <div v-if="artists.length > 0">
+      <div v-if="artists?.length > 0 && !artistsLoad">
         <div class="flex w-full justify-evenly">
           <div v-if="artists[1]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[1].images[2].url" :alt="artists[1].name"
@@ -201,12 +206,13 @@ watch(timeRange, () => {
         </div>
       </div>
       <div v-else>
-        <div class="mt-1 text-center text-white">No Artists Data Found.</div>
+        <div v-if="artistsLoad" class="mt-1 text-center text-white">loading...</div>
+        <div v-else class="mt-1 text-center text-white">No Artists Data Found.</div>
       </div>
     </div>
     <div v-if="displays.song" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Tracks</h2>
-      <div v-if="songs.length > 0" class="w-full">
+      <div v-if="songs?.length > 0 && !songsLoad" class="w-full">
         <div class="flex flex-wrap justify-evenly">
           <div v-for="song in songs" class="px-2 py-1 w-1/2">
             <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-r-lg overflow-hidden flex">
@@ -221,9 +227,12 @@ watch(timeRange, () => {
                 </div>
                 <div class="text-xs text-neutral-300 flex justify-between items-center">
                   <div>
-                    <a :href="song.artists[0].external_urls.spotify" target="blank" class="truncate hover:text-cyan-300"
-                      :title="`Listen ${song.artists[0].name}'s songs on Spotify`">{{
-                        song.artists[0].name }}</a>
+                    <template v-for="(artist, index) in song.artists">
+                      <a :href="artist.external_urls.spotify" target="blank" class="truncate hover:text-cyan-300"
+                        :title="`Listen ${artist.name}'s songs on Spotify`">{{
+                          artist.name }}</a>
+                      <span v-if="index !== song.artists.length - 1 ">,&nbsp;</span>
+                    </template>
                   </div>
                   <div class="h-4 w-4">
                     <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
@@ -235,7 +244,8 @@ watch(timeRange, () => {
         </div>
       </div>
       <div v-else>
-        <div class="mt-1 text-white text-center">No Tracks Data Found.</div>
+        <div v-if="songsLoad" class="mt-1 text-center text-white">loading...</div>
+        <div v-else class="mt-1 text-center text-white">No songs Data Found.</div>
       </div>
     </div>
   </main>
