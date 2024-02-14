@@ -1,116 +1,88 @@
-<script lang="js">
-import { RouterLink } from 'vue-router'
-import { cookieValueOrNull } from '@/utils/isCookieExist.ts'
+<script setup lang="ts">
+import { onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { cookieValueOrNull } from '@/utils/isCookieExist.js'
 import Icon from '@/components/Icon.vue'
-export default {
-  mounted() {
-    this.spotCallAPI()
-    this.timeRange = 'short_term'
-    this.fetchAPI('/v1/me/shows?offset=0&limit=4', 'show')
-    this.fetchAPI('/v1/me/playlists?limit=4', 'playlist')
-    this.fetchAPI('/v1/me/top/artists?limit=7', 'artist')
-    this.fetchAPI('/v1/me/top/tracks?limit=4', 'song')
-  },
-  components: {
-    RouterLink,
-    Icon,
-  },
-  data() {
-    return {
-      user: {
-        name: null,
-        url: null,
-      },
-      displays: {
-        nav: false,
-        artist: true,
-        playlist: false,
-        song: true,
-        show: false,
-      },
-      timeRange: "short_term",
-      artists: [],
-      playlists: [],
-      songs: [],
-      shows: [],
-      errors: null,
-    }
-  },
-  watch: {
-    'errors': function () {
-      if (import.meta.env.VITE_APP_ENV == 'dev') {
-        console.log(errors)
+
+const router = useRouter()
+
+onMounted(() => {
+  spotCallAPI()
+  timeRange.value = 'short_term'
+  fetchAPI('me/top/artists?limit=7', 'artist')
+  fetchAPI('me/top/tracks?limit=4', 'song')
+})
+
+const user = reactive({
+  name: null,
+  url: null,
+})
+const displays = reactive({
+  nav: false,
+  artist: true,
+  playlist: false,
+  song: true,
+  show: false,
+})
+const timeRange = ref<string>("short_term")
+const artists = ref<any>([])
+const songs = ref<any>([])
+const errors = ref<any>(null)
+
+const fetchAPI = async (rawUrl: string, name: string) => {
+  const url = `${import.meta.env.VITE_ROOT_API_URL}${rawUrl}&time_range=${timeRange.value}`
+  try {
+    const response = await fetch(url, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + cookieValueOrNull('accessToken'),
       }
-      this.logout()
-    },
-    'timeRange': function () {
-      this.fetchAPI('/v1/me/top/artists?limit=7', 'artist')
-      this.fetchAPI('/v1/me/top/tracks?limit=4', 'song')
-      if (import.meta.env.VITE_APP_ENV == 'dev') {
-        console.log(`TimeRange Changed to: ${this.timeRange}`)
-      }
-    }
-  },
-  methods: {
-    fetchAPI: function (rawUrl, name) {
-      const url = name == 'show' || name == 'playlist' ? rawUrl : `${import.meta.env.VITE_ROOT_API_URL}${rawUrl}&time_range=${this.timeRange}`
-      fetch(url, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + cookieValueOrNull('accessToken'),
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (name == 'artist') {
-            this.artists = data.items
-          } else if (name == 'playlist') {
-            this.playlists = data.items
-          } else if (name == 'song') {
-            this.songs = data.items
-          } else if (name == 'show') {
-            this.shows = data.items
-          }
-          if (import.meta.env.VITE_APP_ENV == 'dev' && data.error) {
-            console.log(data.error)
-          }
-        })
-    },
-    spotCallAPI: function () {
-      function handleErrors(response) {
-        if (!response.ok) throw new Error(response.status);
-        return response;
-      }
-      fetch('https://api.spotify.com/v1/me', {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + cookieValueOrNull('accessToken'),
-        },
-      })
-        .then(handleErrors)
-        .then((response) => response.json())
-        .then((data) => {
-          this.user.name = data.display_name
-          this.user.url = data.images.length > 0 ? data.images[0].url : null
-        })
-        .catch(error => this.errors = error)
-    },
-    logout: function () {
-      document.cookie = 'state=; Max-Age=0'
-      document.cookie = 'tokenType=; Max-Age=0'
-      document.cookie = 'accessToken=; Max-Age=0'
-      this.$router.replace('/login')
-    }
-  },
+    })
+    const data = await response.json()
+    name == 'artist' ? artists.value = data.items : songs.value = data.items
+  } catch (error) {
+    import.meta.env.VITE_APP_ENV == 'dev' && console.error('Error fetching data:', error)
+  }
 }
+const spotCallAPI = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_ROOT_API_URL}me`, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + cookieValueOrNull('accessToken'),
+      },
+    })
+    const data = await response.json()
+    user.name = data.display_name
+    user.url = data.images.length > 0 ? data.images[0].url : null
+  } catch (error) {
+    import.meta.env.VITE_APP_ENV == 'dev' && console.error('Error fetching data:', error)
+  }
+}
+const logout = () => {
+  document.cookie = 'state=; Max-Age=0'
+  document.cookie = 'tokenType=; Max-Age=0'
+  document.cookie = 'accessToken=; Max-Age=0'
+  router.replace('/login')
+}
+watch(errors, () => {
+  import.meta.env.VITE_APP_ENV == 'dev' && console.log(errors)
+  logout()
+})
+watch(timeRange, () => {
+  fetchAPI('me/top/artists?limit=7', 'artist')
+  fetchAPI('me/top/tracks?limit=4', 'song')
+  import.meta.env.VITE_APP_ENV == 'dev' && console.log(`TimeRange Changed to: ${timeRange.value}`)
+})
+
 </script>
 
 <template>
   <main class="min-h-screen flex flex-col justify-center items-center relative py-12">
     <div v-if="displays.nav" class="fixed h-screen w-full bg-neutral-900 opacity-70 z-30 cursor-pointer"
-      @click="this.displays.nav = false"></div>
+      @click="displays.nav = false"></div>
     <div class="fixed top-0 right-0 z-50">
       <input type="checkbox" v-model="displays.nav" id="nav-toggle" class="hidden">
       <label for="nav-toggle" class="text-neutral-200 cursor-pointer">
@@ -134,12 +106,8 @@ export default {
           <ul>
             <li><input type="checkbox" v-model="displays.artist" id="artist-toggle"><label class="text-white"
                 for="artist-toggle"> Artists</label></li>
-            <li><input type="checkbox" v-model="displays.playlist" id="playlist-toggle"><label class="text-white"
-                for="playlist-toggle"> Playlists</label></li>
             <li><input type="checkbox" v-model="displays.song" id="song-toggle"><label class="text-white"
                 for="song-toggle"> Tracks</label></li>
-            <li><input type="checkbox" v-model="displays.show" id="show-toggle"><label class="text-white"
-                for="show-toggle"> Shows</label></li>
           </ul>
         </div>
         <div>
@@ -180,7 +148,7 @@ export default {
         <div class="flex w-full justify-evenly">
           <div v-if="artists[1]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[1].images[2].url" :alt="artists[1].name"
-              class="w-20 border border-2 shadow-lg shadow-neutral-100 border-neutral-200">
+              class="w-20 border-2 shadow-lg shadow-neutral-100 border-neutral-200">
             <div
               class="mt-2 text-base text-white w-full text-center hover:text-cyan-300 flex justify-center items-center group"
               :title="`Listen ${artists[1].name}'s songs on Spotify`">
@@ -192,7 +160,7 @@ export default {
           </div>
           <div v-if="artists[0]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[0].images[2].url" :alt="artists[0].name"
-              class="w-24 border border-2 shadow-lg shadow-yellow-400 border-yellow-500">
+              class="w-24 border-2 shadow-lg shadow-yellow-400 border-yellow-500">
             <div
               class="mt-2 text-lg text-white w-full text-center hover:text-cyan-300 flex justify-center items-center group"
               :title="`Listen ${artists[0].name}'s songs on Spotify`">
@@ -204,7 +172,7 @@ export default {
           </div>
           <div v-if="artists[2]" class="flex flex-col items-center w-1/3 justify-end">
             <img :src="artists[2].images[2].url" :alt="artists[2].name"
-              class="w-16 border border-2 shadow-lg shadow-amber-600 border-amber-700">
+              class="w-16 border-2 shadow-lg shadow-amber-600 border-amber-700">
             <div
               class="mt-2 text-base text-white w-full text-center hover:text-cyan-300 flex justify-center items-center group"
               :title="`Listen ${artists[2].name}'s songs on Spotify`">
@@ -236,28 +204,6 @@ export default {
         <div class="mt-1 text-center text-white">No Artists Data Found.</div>
       </div>
     </div>
-    <div v-if="displays.playlist" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
-      <h2 class="text-2xl text-semibold text-white">Playlists</h2>
-      <div v-if="playlists.length > 0" class="w-full">
-        <div class="flex justify-evenly">
-          <div v-for="playlist in playlists" class="w-1/4 px-2">
-            <img :src="playlist.images.length > 1 ? playlist.images[1].url : playlist.images[0].url" :alt="playlist.name"
-              class="w-full" style="aspect-ratio: 1/1">
-            <div class="flex mt-1 group" :title="`Open ${playlist.name} Playlist on Spotify`">
-              <div class="h-4 w-4 mr-1">
-                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
-              </div>
-              <span class="text-white group-hover:text-cyan-300 text-xs truncate mr-2">
-                <a :href="playlist.external_urls.spotify" target="blank">{{ playlist.name }}</a>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else>
-        <div class="mt-1 text-white text-center">No Playlist Data Found.</div>
-      </div>
-    </div>
     <div v-if="displays.song" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
       <h2 class="text-2xl text-semibold text-white">Tracks</h2>
       <div v-if="songs.length > 0" class="w-full">
@@ -273,10 +219,12 @@ export default {
                   <a :href="song.external_urls.spotify" class="text-sm truncate hover:text-cyan-300" target="blank"
                     :title="`Listen ${song.name} on Spotify`">{{ song.name }}</a>
                 </div>
-                <div class="text-xs text-neutral-300 hover:text-cyan-400 flex justify-between items-center">
-                  <a :href="song.artists[0].external_urls.spotify" target="blank" class="truncate pr-1"
-                    :title="`Listen ${song.artists[0].name}'s songs on Spotify`">{{
-                      song.artists[0].name }}</a>
+                <div class="text-xs text-neutral-300 flex justify-between items-center">
+                  <div>
+                    <a :href="song.artists[0].external_urls.spotify" target="blank" class="truncate hover:text-cyan-300"
+                      :title="`Listen ${song.artists[0].name}'s songs on Spotify`">{{
+                        song.artists[0].name }}</a>
+                  </div>
                   <div class="h-4 w-4">
                     <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
                   </div>
@@ -288,27 +236,6 @@ export default {
       </div>
       <div v-else>
         <div class="mt-1 text-white text-center">No Tracks Data Found.</div>
-      </div>
-    </div>
-    <div v-if="displays.show" class="mt-5 w-full md:max-w-[450px] mx-auto px-2">
-      <h2 class="text-2xl text-semibold text-white">Shows</h2>
-      <div v-if="shows.length > 0" class="w-full">
-        <div class="flex justify-evenly">
-          <div v-for="show in shows" class="w-1/4 px-2">
-            <img :src="show.show.images[1].url" :alt="show.show.name" class="w-full" style="aspect-ratio: 1/1">
-            <div class="flex items-center group" :title="`Listen ${show.show.name}'s show on Spotify`">
-              <div class="h-4 w-4 mr-1">
-                <icon name="spotify" class="h-4 w-4 group-hover:fill-[#1DB954]" />
-              </div>
-              <span class="whitespace-wrap text-center text-white text-xs mt-2 group-hover:text-cyan-300">
-                <a :href="show.show.external_urls.spotify" target="blank">{{ show.show.name }}</a>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else>
-        <div class="mt-1 text-white text-center">No Show Data Found.</div>
       </div>
     </div>
   </main>
