@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { onMounted, reactive, ref, watch, computed } from 'vue'
 import { cookieValueOrNull } from '@/utils/isCookieExist.js'
 import Icon from '@/components/Icon.vue'
 
@@ -9,7 +9,7 @@ const router = useRouter()
 onMounted(() => {
   spotCallAPI()
   timeRange.value = 'short_term'
-  fetchAPI('me/top/artists?limit=7', 'artist')
+  fetchAPI('me/top/artists?limit=20', 'artist')
   fetchAPI('me/top/tracks?limit=4', 'song')
 })
 
@@ -20,9 +20,8 @@ const user = reactive({
 const displays = reactive({
   nav: false,
   artist: true,
-  playlist: false,
   song: true,
-  show: false,
+  genre: true,
 })
 const timeRange = ref<string>("short_term")
 const artists = ref<any>([])
@@ -74,10 +73,28 @@ const logout = () => {
   document.cookie = 'accessToken=; Max-Age=0'
   router.replace('/login')
 }
+const genresCounts: any = computed(() => {
+  const counts: Record<string, number> = {};
+
+  artists.value.forEach(item => {
+    item.genres.forEach(genre => {
+      counts[genre] = (counts[genre] || 0) + 1;
+    });
+  });
+  const genreCountArray: { name: string; count: number }[] = [];
+  for (const genre in counts) {
+    if (Object.prototype.hasOwnProperty.call(counts, genre)) {
+      genreCountArray.push({ name: genre, count: counts[genre] });
+    }
+  }
+  genreCountArray.sort((a, b) => b.count - a.count);
+  return genreCountArray;
+})
+
 watch(timeRange, () => {
   artistsLoad.value = true
   songsLoad.value = true
-  fetchAPI('me/top/artists?limit=7', 'artist')
+  fetchAPI('me/top/artists?limit=20', 'artist')
   fetchAPI('me/top/tracks?limit=4', 'song')
   import.meta.env.VITE_APP_ENV == 'dev' && console.log(`TimeRange Changed to: ${timeRange.value}`)
 })
@@ -113,6 +130,8 @@ watch(timeRange, () => {
                 for="artist-toggle"> Artists</label></li>
             <li><input type="checkbox" v-model="displays.song" id="song-toggle"><label class="text-white"
                 for="song-toggle"> Tracks</label></li>
+            <li><input type="checkbox" v-model="displays.genre" id="genre-toggle"><label class="text-white"
+                for="genre-toggle"> Genres</label></li>
           </ul>
         </div>
         <div>
@@ -189,7 +208,7 @@ watch(timeRange, () => {
           </div>
         </div>
         <div class="flex flex-wrap">
-          <div v-for="artist in artists.slice(3, 9)" class="px-2 py-1 w-1/2">
+          <div v-for="artist in artists.slice(3, 7)" class="px-2 py-1 w-1/2">
             <div class="bg-gradient-to-r to-neutral-700 from-zinc-800 rounded-r-lg flex overflow-hidden">
               <div class="w-1/4 relative">
                 <img :src="artist.images[2].url" :alt="artist.name" class="h-full w-full">
@@ -231,7 +250,7 @@ watch(timeRange, () => {
                       <a :href="artist.external_urls.spotify" target="blank" class="truncate hover:text-cyan-300"
                         :title="`Listen ${artist.name}'s songs on Spotify`">{{
                           artist.name }}</a>
-                      <span v-if="index !== song.artists.length - 1 ">,&nbsp;</span>
+                      <span v-if="index !== song.artists.length - 1">,&nbsp;</span>
                     </template>
                   </div>
                   <div class="h-4 w-4">
@@ -247,6 +266,16 @@ watch(timeRange, () => {
         <div v-if="songsLoad" class="mt-1 text-center text-white">loading...</div>
         <div v-else class="mt-1 text-center text-white">No songs Data Found.</div>
       </div>
+    </div>
+    <div v-if="displays.genre === true" class="w-full md:max-w-[450px] mt-5 mx-auto px-2">
+      <h2 class="text-2xl text-semibold text-white mb-">Genres</h2>
+      <div v-if="!songsLoad" class="flex flex-wrap justify-center">
+        <div v-for="g in genresCounts" class="px-1 py-[2px]">
+          <span class="text-white px-2 py-1 text-xs bg-green-500 rounded-l">{{ g.count }}</span>
+          <span class="text-white px-2 py-1 text-sm bg-neutral-800">{{ g.name }}</span>
+        </div>
+      </div>
+      <div v-else class="mt-1 text-center text-white">loading...</div>
     </div>
   </main>
 </template>
