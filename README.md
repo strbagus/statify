@@ -1,6 +1,5 @@
 # MyList - Look Your Spotify Top Item
 Display user top artist, playlist, tracks and shows with data from Spotify API.
-- **on review Spotify Developer App Extension Request**
 
 ---
 
